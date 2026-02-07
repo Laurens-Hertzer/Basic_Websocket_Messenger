@@ -1,50 +1,35 @@
 const WebSocket = require('ws');
 const readline = require('readline');
 
-// Create readline interface for user input
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout
 });
 
-// Connect to the WebSocket server
-const ws = new WebSocket(
-  location.hostname === 'localhost'
-    ? 'ws://localhost:8080'
-    : `wss://${location.host}`
-);
+const ws = new WebSocket('ws://localhost:8080');
 
-// Connection opened
 ws.on('open', () => {
-  console.log('Connected to the WebSocket server');
-  promptForMessage();
+  console.log('Connected to WebSocket server');
+  ask();
 });
 
-// Listen for messages from the server
-ws.on('message', (message) => {
-  console.log(`Server: ${message}`);
+ws.on('message', (msg) => {
+  console.log('Server:', msg);
 });
 
-// Handle errors
-ws.on('error', (error) => {
-  console.error('WebSocket error:', error);
-});
-
-// Handle connection close
 ws.on('close', () => {
-  console.log('Disconnected from the server');
+  console.log('Disconnected');
   process.exit(0);
 });
 
-// Function to prompt user for messages
-function promptForMessage() {
-  rl.question('Enter a message (or "exit" to quit): ', (message) => {
-    if (message.toLowerCase() === 'exit') {
+function ask() {
+  rl.question('> ', (msg) => {
+    if (msg.toLowerCase() === 'exit') {
       ws.close();
       rl.close();
       return;
     }
-    ws.send(message);
-    promptForMessage();
+    ws.send(msg);
+    ask();
   });
 }

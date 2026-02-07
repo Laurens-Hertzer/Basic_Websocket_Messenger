@@ -4,12 +4,12 @@ const WebSocket = require('ws');
 const server = http.createServer();
 const wss = new WebSocket.Server({ server });
 
-wss.on('connection', ws => {
+wss.on('connection', (ws) => {
   console.log('Client connected');
 
   ws.send('Welcome to the WebSocket server!');
 
-  ws.on('message', message => {
+  ws.on('message', (message) => {
     console.log(`Received: ${message}`);
     ws.send(`Server received: ${message}`);
   });
